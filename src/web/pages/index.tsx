@@ -131,6 +131,14 @@ const CHIPS = [
   { icon: Zap, title: "Fast Updates", text: "On WhatsApp, every step" },
 ];
 
+/** One banner photo per hero slide (file names match the photo prompts). */
+const HERO_IMAGES: Record<string, string> = {
+  "/services/registration": asset("/images/hero-registration.jpg"),
+  "/services/microsoft-certifications": asset("/images/hero.jpg"),
+  "/services/branding": asset("/images/hero-branding.jpg"),
+  "/services/website": asset("/images/hero-website.jpg"),
+};
+
 function Hero() {
   const [i, setI] = useState(0);
   const n = SLIDES.length;
@@ -141,7 +149,15 @@ function Hero() {
   const s = SLIDES[i];
   return (
     <section className="relative isolate overflow-hidden bg-ink">
-      <img src={asset("/images/hero.jpg")} alt="" className="photo kenburns absolute inset-0 -z-20 h-full w-full object-cover object-[70%_center]" />
+      {SLIDES.map((sl, idx) => (
+        <img
+          key={sl.link}
+          src={HERO_IMAGES[sl.link] ?? asset("/images/hero.jpg")}
+          alt=""
+          aria-hidden={idx !== i}
+          className={`photo absolute inset-0 -z-20 h-full w-full object-cover object-[70%_center] transition-opacity duration-1000 ${idx === i ? "kenburns opacity-100" : "opacity-0"}`}
+        />
+      ))}
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,#0e0e10_0%,rgba(14,14,16,0.94)_34%,rgba(14,14,16,0.55)_58%,rgba(14,14,16,0.15)_100%)] max-lg:bg-[linear-gradient(180deg,rgba(14,14,16,0.6)_0%,#0e0e10_75%)]" />
 
       {/* handwritten notes */}
