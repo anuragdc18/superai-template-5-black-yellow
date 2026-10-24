@@ -135,7 +135,7 @@ function Hero() {
   const [i, setI] = useState(0);
   const n = SLIDES.length;
   useEffect(() => {
-    const t = setTimeout(() => setI((v) => (v + 1) % n), 6000);
+    const t = setTimeout(() => setI((v) => (v + 1) % n), 5000);
     return () => clearTimeout(t);
   }, [i, n]);
   const s = SLIDES[i];
