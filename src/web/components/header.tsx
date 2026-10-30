@@ -5,6 +5,7 @@ import { ChevronDown, Clock, Mail, Menu, Minus, Phone, Plus, X, ArrowRight, Layo
 import { CATEGORIES, serviceUrl, waLink } from "../lib/site";
 import { telHref, useSite } from "../queries/site";
 import { authClient } from "../lib/auth";
+import { useExtraLinks } from "./content-ui";
 
 export function Logo({ light = false }: { light?: boolean }) {
   const site = useSite();
@@ -32,6 +33,7 @@ function WaIcon({ className = "h-4 w-4" }: { className?: string }) {
 export { WaIcon };
 
 export function Header() {
+  const extra = useExtraLinks();
   const [open, setOpen] = useState(false);
   const [acc, setAcc] = useState<string | null>("registration");
   const [scrolled, setScrolled] = useState(false);
@@ -84,10 +86,10 @@ export function Header() {
         <div className="container-x flex h-[72px] items-center gap-4">
           <Logo />
 
-          <nav className="ml-auto hidden items-center gap-0.5 min-[1150px]:flex xl:gap-1">
+          <nav className="ml-auto hidden items-center gap-0.5 min-[1280px]:flex xl:gap-1">
             <Link
               to="/"
-              className={`relative px-2.5 py-2 text-[14px] font-semibold xl:px-3 xl:text-[14.5px] ${loc === "/" ? "text-ink after:absolute after:inset-x-2.5 after:-bottom-[17px] after:h-[3px] after:rounded-full after:bg-brand" : "text-ink/70 hover:text-ink"}`}
+              className={`relative px-2 py-2 text-[14px] font-semibold xl:text-[14.5px] ${loc === "/" ? "text-ink after:absolute after:inset-x-2 after:-bottom-[17px] after:h-[3px] after:rounded-full after:bg-brand" : "text-ink/70 hover:text-ink"}`}
             >
               Home
             </Link>
@@ -95,8 +97,8 @@ export function Header() {
               <div key={c.slug} className="group relative">
                 <Link
                   to={`/services/${c.slug}`}
-                  className={`relative flex items-center gap-1 whitespace-nowrap px-2.5 py-2 text-[14px] font-semibold transition xl:px-3 xl:text-[14.5px] ${
-                    loc === `/services/${c.slug}` ? "text-ink after:absolute after:inset-x-2.5 after:-bottom-[17px] after:h-[3px] after:rounded-full after:bg-brand" : "text-ink/70 group-hover:text-ink"
+                  className={`relative flex items-center gap-1 whitespace-nowrap px-2 py-2 text-[14px] font-semibold transition xl:text-[14.5px] ${
+                    loc === `/services/${c.slug}` ? "text-ink after:absolute after:inset-x-2 after:-bottom-[17px] after:h-[3px] after:rounded-full after:bg-brand" : "text-ink/70 group-hover:text-ink"
                   }`}
                 >
                   {c.menu}
@@ -125,20 +127,38 @@ export function Header() {
                 </div>
               </div>
             ))}
+            {extra.length > 0 && (
+              <div className="group relative">
+                <button type="button" className={`relative flex items-center gap-1 whitespace-nowrap px-2 py-2 text-[14px] font-semibold transition xl:text-[14.5px] ${extra.some((x) => loc.startsWith(x.to)) ? "text-ink after:absolute after:inset-x-2 after:-bottom-[17px] after:h-[3px] after:rounded-full after:bg-brand" : "text-ink/70 group-hover:text-ink"}`}>
+                  More
+                  <ChevronDown className="h-3.5 w-3.5 transition group-hover:rotate-180" />
+                </button>
+                <div className="invisible absolute right-0 top-full w-[220px] translate-y-2 pt-3 opacity-0 transition duration-200 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                  <div className="rounded-2xl border border-line bg-white p-2 shadow-[0_28px_60px_-24px_rgba(0,0,0,0.45)]">
+                    {[...extra, { to: "/contact", label: "Contact Us" }].map((x) => (
+                      <Link key={x.to} to={x.to} className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[14px] text-ink hover:bg-brand/20">
+                        <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                        {x.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2 min-[1150px]:ml-2">
+          <div className="ml-auto flex items-center gap-2 min-[1280px]:ml-2">
             <a
               href={waLink(site.whatsapp)}
               target="_blank"
               rel="noreferrer"
-              className="hidden items-center gap-2 whitespace-nowrap rounded-full bg-ink py-2.5 pl-3 pr-4 text-[14px] font-semibold text-white transition hover:-translate-y-0.5 sm:flex"
+              className="hidden items-center gap-2 whitespace-nowrap rounded-full bg-ink py-2.5 pl-3 pr-4 text-[14px] min-[1280px]:pr-3 font-semibold text-white transition hover:-translate-y-0.5 sm:flex"
             >
-              <span className="grid h-6 w-6 place-items-center rounded-full bg-wa"><WaIcon className="h-3.5 w-3.5" /></span> WhatsApp Us
+              <span className="grid h-6 w-6 place-items-center rounded-full bg-wa"><WaIcon className="h-3.5 w-3.5" /></span> <span className="min-[1280px]:sr-only">WhatsApp Us</span>
             </a>
             <button
               onClick={() => setOpen(true)}
-              className="grid h-11 w-11 place-items-center rounded-full bg-brand text-ink min-[1150px]:hidden"
+              className="grid h-11 w-11 place-items-center rounded-full bg-brand text-ink min-[1280px]:hidden"
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" />
@@ -148,7 +168,7 @@ export function Header() {
       </header>
 
       {/* Mobile drawer */}
-      <div className={`fixed inset-0 z-[60] min-[1150px]:hidden ${open ? "" : "pointer-events-none"}`}>
+      <div className={`fixed inset-0 z-[60] min-[1280px]:hidden ${open ? "" : "pointer-events-none"}`}>
         <button
           type="button"
           aria-label="Close menu overlay"
@@ -202,6 +222,11 @@ export function Header() {
                 </div>
               );
             })}
+            {[...extra, { to: "/contact", label: "Contact Us" }].map((x) => (
+              <Link key={x.to} to={x.to} className="block border-b border-line py-3.5 font-semibold text-ink">
+                {x.label}
+              </Link>
+            ))}
             {session && (
               <Link to="/admin/dashboard" className="block py-3.5 font-semibold text-ink">
                 Owner Dashboard

@@ -43,6 +43,8 @@ import { asset } from "../lib/demo";
 import { useSite } from "../queries/site";
 import { LeadForm } from "../components/lead-form";
 import { WaIcon } from "../components/header";
+import { useContent } from "../queries/content";
+import { PostCard } from "../components/content-ui";
 
 /* ───────────── small shared bits ───────────── */
 
@@ -56,10 +58,10 @@ export function HandArrow({ className = "", flip = false }: { className?: string
   );
 }
 
-function Stars({ className = "h-4 w-4" }: { className?: string }) {
+function Stars({ className = "h-4 w-4", n = 5 }: { className?: string; n?: number }) {
   return (
     <span className="flex text-[#f5b400]">
-      {[0, 1, 2, 3, 4].map((k) => (
+      {Array.from({ length: n }, (_, k) => k).map((k) => (
         <Star key={k} className={`${className} fill-current`} />
       ))}
     </span>
@@ -133,10 +135,10 @@ const CHIPS = [
 
 /** One banner photo per hero slide (file names match the photo prompts). */
 const HERO_IMAGES: Record<string, string> = {
-  "/services/registration": asset("/images/hero-registration.jpg"),
-  "/services/microsoft-certifications": asset("/images/hero.jpg"),
-  "/services/branding": asset("/images/hero-branding.jpg"),
-  "/services/website": asset("/images/hero-website.jpg"),
+  "/services/registration": "/images/hero-registration.jpg",
+  "/services/microsoft-certifications": "/images/hero.jpg",
+  "/services/branding": "/images/hero-branding.jpg",
+  "/services/website": "/images/hero-website.jpg",
 };
 
 function Hero() {
@@ -152,7 +154,7 @@ function Hero() {
       {SLIDES.map((sl, idx) => (
         <img
           key={sl.link}
-          src={HERO_IMAGES[sl.link] ?? asset("/images/hero.jpg")}
+          src={asset(HERO_IMAGES[sl.link] ?? "/images/hero.jpg")}
           alt=""
           aria-hidden={idx !== i}
           className={`photo absolute inset-0 -z-20 h-full w-full object-cover object-[70%_center] transition-opacity duration-1000 ${idx === i ? "kenburns opacity-100" : "opacity-0"}`}
@@ -222,6 +224,7 @@ function Hero() {
 /* ───────────── 3 + 4. callback form + stats ───────────── */
 
 function Callback() {
+  const rating = useContent().reviewsSection.rating;
   return (
     <section id="callback" className="relative z-10 scroll-mt-28 bg-surface pb-12">
       <div className="container-x -mt-24">
@@ -236,7 +239,7 @@ function Callback() {
           <div className="flex items-center gap-3 md:justify-center">
             <GoogleG />
             <div>
-              <p className="text-[22px] font-extrabold leading-none text-ink">4.8<span className="text-[14px] font-semibold text-body">/5</span></p>
+              <p className="text-[22px] font-extrabold leading-none text-ink">{rating || "–"}<span className="text-[14px] font-semibold text-body">/5</span></p>
               <p className="mt-1 text-[13px]">Google Rating</p>
               <Stars className="h-3.5 w-3.5" />
             </div>
@@ -752,14 +755,13 @@ const WHY = [
   { icon: Headphones, title: "Real experts", text: "CA, CS and design experts guide you at every step." },
 ];
 
-const REVIEWS = [
-  { name: "Ravi K.", city: "Hyderabad", text: "My GST and company registration were done in a week. Very smooth, and they explained everything simply.", tone: "bg-brand text-ink" },
-  { name: "Priya S.", city: "Bengaluru", text: "They designed our logo and website together. Looks very professional and customers notice it.", tone: "bg-ink text-brand" },
-  { name: "Arjun M.", city: "Pune", text: "Our Instagram enquiries doubled in 2 months. The team posts on time every week.", tone: "bg-[#e7e3d6] text-ink" },
-];
+const TONES = ["bg-brand text-ink", "bg-ink text-brand", "bg-[#e7e3d6] text-ink"];
 
 function Trust() {
   const site = useSite();
+  const content = useContent();
+  const rs = content.reviewsSection;
+  const REVIEWS = rs.show ? content.reviews.slice(0, 3) : [];
   return (
     <section className="bg-surface py-20 sm:py-24">
       <div className="container-x grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">
@@ -782,30 +784,33 @@ function Trust() {
             ))}
           </div>
         </div>
+        {REVIEWS.length > 0 && (
         <div>
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <h3 className="text-[22px] font-extrabold">What Our Clients Say</h3>
-            <span className="flex items-center gap-2 text-[14px] font-semibold text-ink">
-              <Stars /> 4.8 on Google
-            </span>
+            {rs.rating && (
+              <a href={rs.googleUrl || undefined} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-[14px] font-semibold text-ink">
+                <Stars /> {rs.rating} on Google{rs.ratingCount ? ` (${rs.ratingCount})` : ""}
+              </a>
+            )}
           </div>
           <div className="columns-1 gap-4 sm:columns-2 [&>*]:mb-4 [&>*]:break-inside-avoid">
-            <div className="rounded-[24px] bg-ink p-7 text-white">
-              <p className="text-[56px] font-extrabold leading-none text-brand">4.8<span className="text-[26px]">★</span></p>
+            {rs.rating && <div className="rounded-[24px] bg-ink p-7 text-white">
+              <p className="text-[56px] font-extrabold leading-none text-brand">{rs.rating}<span className="text-[26px]">★</span></p>
               <p className="mt-2 text-[15px] text-white/70">Average rating from 1,000+ happy clients across India.</p>
               <p className="hand mt-4 rotate-[-3deg] text-[24px] text-brand">Thank you for trusting us! 💛</p>
-            </div>
+            </div>}
             {REVIEWS.map((r, k) => (
-              <figure key={r.name} className={`rounded-[24px] bg-white p-6 ring-1 ring-line ${k === 1 ? "pb-8" : ""}`}>
-                <Stars />
+              <figure key={r.id} className={`rounded-[24px] bg-white p-6 ring-1 ring-line ${k === 1 ? "pb-8" : ""}`}>
+                <Stars n={r.rating} />
                 <blockquote className="mt-3 text-[15.5px] leading-relaxed text-ink">“{r.text}”</blockquote>
                 <figcaption className="mt-5 flex items-center gap-3">
-                  <span className={`grid h-11 w-11 place-items-center rounded-full text-[15px] font-extrabold ${r.tone}`}>
-                    {r.name.split(" ").map((x) => x[0]).join("")}
+                  <span className={`grid h-11 w-11 place-items-center rounded-full text-[15px] font-extrabold ${TONES[k % 3]}`}>
+                    {r.name.split(" ").filter(Boolean).map((x) => x[0]).join("").slice(0, 2)}
                   </span>
                   <span>
                     <span className="block font-bold text-ink">{r.name}</span>
-                    <span className="text-[13px]">{r.city}</span>
+                    <span className="text-[13px]">{r.place}</span>
                   </span>
                 </figcaption>
               </figure>
@@ -818,6 +823,7 @@ function Trust() {
             </div>
           </div>
         </div>
+        )}
       </div>
     </section>
   );
@@ -825,17 +831,12 @@ function Trust() {
 
 /* ───────────── 11. FAQ + WhatsApp person ───────────── */
 
-const FAQS = [
-  { q: "Do I need to visit your office?", a: "No. Everything is done online. You can share documents on WhatsApp or email." },
-  { q: "How long does GST registration take?", a: "Usually 3 to 7 working days, once we have all your documents." },
-  { q: "Can you do registration and the website together?", a: "Yes. Many clients start with registration and logo, then add a website. We offer combo prices." },
-  { q: "How do I pay?", a: "You can pay by UPI, debit/credit card or bank transfer. You get a proper GST invoice." },
-  { q: "I'm not sure which registration I need. Can you help?", a: "Yes — that's what the free consultation is for. Our expert will suggest the right option for you." },
-];
 
 function Faq() {
   const site = useSite();
   const [open, setOpen] = useState<number | null>(0);
+  const FAQS = useContent().faqs;
+  if (!FAQS.length) return null;
   return (
     <section className="bg-white py-20 sm:py-24">
       <div className="container-x grid items-center gap-14 lg:grid-cols-[1.15fr_0.85fr]">
@@ -846,7 +847,7 @@ function Faq() {
             {FAQS.map((f, idx) => {
               const isOpen = open === idx;
               return (
-                <div key={f.q} className={`rounded-[20px] transition ${isOpen ? "bg-brand/20 ring-1 ring-brand" : "bg-surface ring-1 ring-line"}`}>
+                <div key={f.id} className={`rounded-[20px] transition ${isOpen ? "bg-brand/20 ring-1 ring-brand" : "bg-surface ring-1 ring-line"}`}>
                   <button
                     onClick={() => setOpen(isOpen ? null : idx)}
                     className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[16px] font-bold text-ink"
@@ -900,6 +901,30 @@ function Faq() {
   );
 }
 
+/* ───────────── Latest blog posts ───────────── */
+
+function LatestPosts() {
+  const content = useContent();
+  if (!content.blog.show || !content.posts.length) return null;
+  return (
+    <section className="bg-surface py-20 sm:py-24">
+      <div className="container-x">
+        <Head pill={content.blog.title || "Blog"} title={<>Tips &amp; <span className="mark">guides</span></>} text="Simple articles to help your business grow." />
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {content.posts.slice(0, 3).map((p) => (
+            <PostCard key={p.id} p={p} />
+          ))}
+        </div>
+        <div className="mt-8 text-center">
+          <Link to="/blog" className="inline-flex items-center gap-1 text-[15px] font-bold text-ink underline decoration-brand decoration-[3px] underline-offset-4">
+            See all articles <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ───────────── 12. CTA band (also used on inner pages) ───────────── */
 
 export function CtaBand() {
@@ -943,6 +968,7 @@ export default function Index() {
       <Quiz />
       <HowItWorks />
       <Trust />
+      <LatestPosts />
       <Faq />
       <CtaBand />
     </>
