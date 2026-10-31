@@ -367,7 +367,7 @@ const INDUSTRIES = [
     icon: Store,
     title: "Shop owners",
     text: "Get legal, look trusted and reply to customers faster.",
-    services: ["GST Registration", "Shop & Establishment", "Logo Design", "WhatsApp Auto-Reply"],
+    services: ["GST Registration", "Shop & Establishment", "Logo Design", "WhatsApp AI Reply Setup"],
   },
   {
     image: "/images/industry-cafe.jpg",
@@ -375,7 +375,7 @@ const INDUSTRIES = [
     icon: Coffee,
     title: "Cafés & restaurants",
     text: "Licences, menus and a buzzing Instagram page.",
-    services: ["FSSAI (Food License)", "Menu Card", "Instagram & Facebook Handling", "Google Ranking (SEO)"],
+    services: ["FSSAI Registration", "Menu Design", "Social Media Management", "SEO Friendly"],
   },
   {
     image: "/images/industry-startup.jpg",
@@ -383,7 +383,7 @@ const INDUSTRIES = [
     icon: Rocket,
     title: "Startups",
     text: "Start right, protect your name and launch online.",
-    services: ["Company Registration (Pvt Ltd)", "Trademark", "Full Brand Kit", "Business Website"],
+    services: ["Private Limited Registration", "Trademark Registration", "Brand Guidelines", "WordPress Website Development"],
   },
   {
     image: "/images/industry-student.jpg",
@@ -508,8 +508,8 @@ const QUIZ: QNode = {
             next: {
               q: "Will you sell online or to other states?",
               options: [
-                { label: "Yes", result: ["Proprietorship / Firm Registration", "GST Registration"] },
-                { label: "No, only locally", result: ["Proprietorship / Firm Registration", "MSME / Udyam"] },
+                { label: "Yes", result: ["Firm Registration", "GST Registration"] },
+                { label: "No, only locally", result: ["Firm Registration", "Udyam / MSME Registration"] },
               ],
             },
           },
@@ -518,7 +518,7 @@ const QUIZ: QNode = {
             next: {
               q: "Do you plan to raise investment later?",
               options: [
-                { label: "Yes", result: ["Company Registration (Pvt Ltd)", "Trademark"] },
+                { label: "Yes", result: ["Private Limited Registration", "Trademark Registration"] },
                 { label: "No", result: ["LLP Registration", "GST Registration"] },
               ],
             },
@@ -536,8 +536,8 @@ const QUIZ: QNode = {
             next: {
               q: "Do you already have a website?",
               options: [
-                { label: "Yes", result: ["Google Ranking (SEO)", "Instagram & Facebook Handling"] },
-                { label: "Not yet", result: ["Business Website", "Instagram & Facebook Handling"] },
+                { label: "Yes", result: ["SEO Friendly", "Social Media Management"] },
+                { label: "Not yet", result: ["WordPress Website Development", "Social Media Management"] },
               ],
             },
           },
@@ -546,7 +546,7 @@ const QUIZ: QNode = {
             next: {
               q: "Do you have a logo already?",
               options: [
-                { label: "Yes", result: ["Full Brand Kit", "Rebranding"] },
+                { label: "Yes", result: ["Brand Guidelines", "Rebranding"] },
                 { label: "No", result: ["Logo Design", "Business Card"] },
               ],
             },
@@ -556,8 +556,8 @@ const QUIZ: QNode = {
             next: {
               q: "Do you have a GST number?",
               options: [
-                { label: "Yes", result: ["GST & Income Tax Filing", "Trademark"] },
-                { label: "No", result: ["GST Registration", "MSME / Udyam"] },
+                { label: "Yes", result: ["GST Filings", "Trademark Registration"] },
+                { label: "No", result: ["GST Registration", "Udyam / MSME Registration"] },
               ],
             },
           },
