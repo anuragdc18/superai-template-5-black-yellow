@@ -2,6 +2,8 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+/* Hover effects (menus, dropdowns) work on every computer, including touch-screen laptops that report "no hover" */
+@custom-variant hover (&:hover);
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
